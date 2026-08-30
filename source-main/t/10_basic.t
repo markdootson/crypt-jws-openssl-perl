@@ -44,7 +44,6 @@ my $inputclaims = {
         
         my $token = $handler->encode({
             claims      => $inputclaims,
-            algorithm   => $algo,
             secret      => $prvkey,
             header      => { alg => $algo, typ => 'JWT' },
         });
@@ -57,7 +56,6 @@ my $inputclaims = {
             claims      => $inputclaims,
             header      => { alg => $algo, typ => 'JWT' },
             verifytoken => join(':', $algo, $parts[0] . '.' . $parts[1],  $parts[2] ),
-            error       => undef,
         };
         
         my $bad_verify_token = join(':', $algo, $parts[0] . '.' . $parts[1], random_byte_base64_signature($BITS) );
@@ -111,14 +109,12 @@ my $inputclaims = {
                 
                 my $token = $handler->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
                 
                 my $compare_token = $handler->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
@@ -141,7 +137,6 @@ my $inputclaims = {
                     claims      => $inputclaims,
                     header      => { alg => $algo , typ => 'JWT' },
                     verifytoken => join(':', $algo, $parts[0] . '.' . $parts[1],  $parts[2] ),
-                    error       => undef,
                 };
                 
                 my $bad_verify_token = join(':', $algo, $parts[0] . '.' . $parts[1], random_byte_base64_signature($BITS) );
@@ -173,14 +168,12 @@ my $inputclaims = {
                 
                 my $token = $handler->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
                 
                 my $compare_token = $handler->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
@@ -203,7 +196,6 @@ my $inputclaims = {
                     claims      => $inputclaims,
                     header      => { alg => $algo , typ => 'JWT' },
                     verifytoken => join(':', $algo, $parts[0] . '.' . $parts[1],  $parts[2] ),
-                    error       => undef,
                 };
                 
                 my $bad_verify_token = join(':', $algo, $parts[0] . '.' . $parts[1], random_byte_base64_signature($BITS) );
@@ -257,7 +249,6 @@ my $inputclaims = {
         {
             my $token = $handler->encode(
                 claims      => $inputclaims,
-                algorithm   => $algo,
                 secret      => $prvkey,
                 header      => { alg => $algo, typ => 'JWT' },
                 non_deterministic => 1,
@@ -265,7 +256,6 @@ my $inputclaims = {
             
             my $compare_token = $handler->encode(
                 claims      => $inputclaims,
-                algorithm   => $algo,
                 secret      => $prvkey,
                 header      => { alg => $algo, typ => 'JWT' },
                 non_deterministic => 1,
@@ -286,7 +276,6 @@ my $inputclaims = {
                 claims      => $inputclaims,
                 header      => { alg => $algo, typ => 'JWT' },
                 verifytoken => join(':', $algo, $parts[0] . '.' . $parts[1],  $parts[2] ),
-                error       => undef,
             };
             
             my $bad_verify_token = join(':', $algo, $parts[0] . '.' . $parts[1], random_byte_base64_signature($BITS) );
@@ -307,14 +296,12 @@ my $inputclaims = {
         {
             my $det_token = $handler->encode(
                 claims        => $inputclaims,
-                algorithm     => $algo,
                 secret        => $prvkey,
                 header        => { alg => $algo, typ => 'JWT' }
             );
             
             my $det_compare_token = $handler->encode(
                 claims       => $inputclaims,
-                algorithm    => $algo,
                 secret       => $prvkey,
                 header       => { alg => $algo, typ => 'JWT' }
             );
@@ -334,7 +321,6 @@ my $inputclaims = {
                 claims      => $inputclaims,
                 header      => { alg => $algo, typ => 'JWT' },
                 verifytoken => join(':', $algo, $det_parts[0] . '.' . $det_parts[1],  $det_parts[2] ),
-                error       => undef,
             };
             
             my $det_decoded = $handler->decode_unverified( token  => $det_token );

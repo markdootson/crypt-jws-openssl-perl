@@ -42,14 +42,12 @@ my $inputclaims = {
             for my $algo ( @pkcs1algos ) {
                 my $token_1 = $H1->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
                 
                 my $token_2 = $H2->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
@@ -62,7 +60,6 @@ my $inputclaims = {
                     claims      => $inputclaims,
                     header      => { alg => $algo , typ => 'JWT' },
                     verifytoken => join(':', $algo, $token_1_parts[0] . '.' . $token_1_parts[1],  $token_1_parts[2] ),
-                    error       => undef,
                 };
                 
                 my @token_2_parts   = split(/\./, $token_2);
@@ -71,7 +68,6 @@ my $inputclaims = {
                     claims      => $inputclaims,
                     header      => { alg => $algo , typ => 'JWT' },
                     verifytoken => join(':', $algo, $token_2_parts[0] . '.' . $token_2_parts[1],  $token_2_parts[2] ),
-                    error       => undef,
                 };
                  
                 my $decoded_1 = $H1->decode_unverified( token  => $token_1 );
@@ -108,14 +104,12 @@ my $inputclaims = {
             for my $algo ( @pssalgos ) {
                 my $token_1 = $H1->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
                 
                 my $token_2 = $H2->encode(
                     claims      => $inputclaims,
-                    algorithm   => $algo,
                     secret      => $prvkey,
                     header      => { alg => $algo, typ => 'JWT' }
                 );
@@ -128,7 +122,6 @@ my $inputclaims = {
                     claims      => $inputclaims,
                     header      => { alg => $algo , typ => 'JWT' },
                     verifytoken => join(':', $algo, $token_1_parts[0] . '.' . $token_1_parts[1],  $token_1_parts[2] ),
-                    error       => undef,
                 };
                 
                 my @token_2_parts   = split(/\./, $token_2);
@@ -137,7 +130,6 @@ my $inputclaims = {
                     claims      => $inputclaims,
                     header      => { alg => $algo , typ => 'JWT' },
                     verifytoken => join(':', $algo, $token_2_parts[0] . '.' . $token_2_parts[1],  $token_2_parts[2] ),
-                    error       => undef,
                 };
                  
                 my $decoded_1 = $H1->decode_unverified( token  => $token_1 );
@@ -192,7 +184,6 @@ my $inputclaims = {
             
             my $token_1 = $H1->encode(
                 claims      => $inputclaims,
-                algorithm   => $algo,
                 secret      => $prvkey,
                 header      => { alg => $algo, typ => 'JWT' },
                 non_deterministic => 1,
@@ -200,7 +191,6 @@ my $inputclaims = {
             
             my $token_2 = $H2->encode(
                 claims      => $inputclaims,
-                algorithm   => $algo,
                 secret      => $prvkey,
                 header      => { alg => $algo, typ => 'JWT' },
                 non_deterministic => 1,
@@ -214,7 +204,6 @@ my $inputclaims = {
                 claims      => $inputclaims,
                 header      => { alg => $algo , typ => 'JWT' },
                 verifytoken => join(':', $algo, $token_1_parts[0] . '.' . $token_1_parts[1],  $token_1_parts[2] ),
-                error       => undef,
             };
             
             my @token_2_parts   = split(/\./, $token_2);
@@ -223,7 +212,6 @@ my $inputclaims = {
                 claims      => $inputclaims,
                 header      => { alg => $algo , typ => 'JWT' },
                 verifytoken => join(':', $algo, $token_2_parts[0] . '.' . $token_2_parts[1],  $token_2_parts[2] ),
-                error       => undef,
             };
              
             my $decoded_1 = $H1->decode_unverified( token  => $token_1 );
@@ -254,14 +242,12 @@ my $inputclaims = {
             
             my $token_1 = $H1->encode(
                 claims      => $inputclaims,
-                algorithm   => $algo,
                 secret      => $prvkey,
                 header      => { alg => $algo, typ => 'JWT' }
             );
             
             my $token_2 = $H2->encode(
                 claims      => $inputclaims,
-                algorithm   => $algo,
                 secret      => $prvkey,
                 header      => { alg => $algo, typ => 'JWT' }
             );
@@ -274,7 +260,6 @@ my $inputclaims = {
                 claims      => $inputclaims,
                 header      => { alg => $algo , typ => 'JWT' },
                 verifytoken => join(':', $algo, $token_1_parts[0] . '.' . $token_1_parts[1],  $token_1_parts[2] ),
-                error       => undef,
             };
             
             my @token_2_parts   = split(/\./, $token_2);
@@ -283,7 +268,6 @@ my $inputclaims = {
                 claims      => $inputclaims,
                 header      => { alg => $algo , typ => 'JWT' },
                 verifytoken => join(':', $algo, $token_2_parts[0] . '.' . $token_2_parts[1],  $token_2_parts[2] ),
-                error       => undef,
             };
              
             my $decoded_1 = $H1->decode_unverified( token  => $token_1 );
