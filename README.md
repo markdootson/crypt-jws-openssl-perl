@@ -1,4 +1,4 @@
-# crypt-jws-perl
+# crypt-jws-openssl-perl
 Sign JWTs with OpenSSL Perl modules
 
 Crypt::OpenSSL::RSA
