@@ -1,5 +1,5 @@
 package Crypt::JWS::OpenSSL::Util::PEM;
-$Crypt::JWS::OpenSSL::Util::PEM::VERSION = '0.001';
+$Crypt::JWS::OpenSSL::Util::PEM::VERSION = '0.003';
 use Moo;
 with qw(
     Crypt::JWS::OpenSSL::Role::Encoder
@@ -61,7 +61,7 @@ sub generate_ecc_key_pair {
     my $x = Crypt::OpenSSL::Bignum->new;
     my $y = Crypt::OpenSSL::Bignum->new;
     
-    Crypt::OpenSSL::EC::EC_POINT::get_affine_coordinates_GF2m($group, $p, $x, $y, $ctx);
+    Crypt::OpenSSL::EC::EC_POINT::get_affine_coordinates_GFp($group, $p, $x, $y, $ctx);
     
     my $private_ref = $self->private_ecc_key_der($alg, $x->to_bin, $y->to_bin, $d->to_bin);
     my $private_pem = $self->encode_ecc_private_key_pem($$private_ref);
@@ -85,7 +85,7 @@ Crypt::JWS::OpenSSL::Util::PEM - Utility to generate pem encoded keys.
 
 =head1 VERSION
 
-version 0.001
+version 0.003
 
 =head1 SYNOPSIS
 

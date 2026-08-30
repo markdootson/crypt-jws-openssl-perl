@@ -1,5 +1,5 @@
 package Crypt::JWS::OpenSSL::Util::JWK;
-$Crypt::JWS::OpenSSL::Util::JWK::VERSION = '0.001';
+$Crypt::JWS::OpenSSL::Util::JWK::VERSION = '0.003';
 use Moo;
 with qw(
     Crypt::JWS::OpenSSL::Role::Encoder
@@ -314,7 +314,7 @@ Crypt::JWS::OpenSSL::Util::JWK - Utility to convert pem encoded keys to and from
 
 =head1 VERSION
 
-version 0.001
+version 0.003
 
 =head1 SYNOPSIS
 
