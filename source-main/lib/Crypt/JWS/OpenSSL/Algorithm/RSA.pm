@@ -1,5 +1,5 @@
 package Crypt::JWS::OpenSSL::Algorithm::RSA;
-$Crypt::JWS::OpenSSL::Algorithm::RSA::VERSION = '0.001';
+$Crypt::JWS::OpenSSL::Algorithm::RSA::VERSION = '0.003';
 use Moo;
 with qw(
     Crypt::JWS::OpenSSL::Role::Algorithm
@@ -178,7 +178,7 @@ Crypt::JWS::OpenSSL::Algorithm::RSA - Sign and verify tokens using RSA algorithm
 
 =head1 VERSION
 
-version 0.001
+version 0.003
 
 =head1 SYNOPSIS
 

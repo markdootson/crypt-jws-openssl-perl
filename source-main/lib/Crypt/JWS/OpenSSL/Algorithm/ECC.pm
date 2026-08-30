@@ -1,5 +1,5 @@
 package Crypt::JWS::OpenSSL::Algorithm::ECC;
-$Crypt::JWS::OpenSSL::Algorithm::ECC::VERSION = '0.001';
+$Crypt::JWS::OpenSSL::Algorithm::ECC::VERSION = '0.003';
 use Moo;
 with qw(
   Crypt::JWS::OpenSSL::Role::Algorithm
@@ -307,7 +307,7 @@ Crypt::JWS::OpenSSL::Algorithm::ECC - Sign and verify tokens using ECDSA algorit
 
 =head1 VERSION
 
-version 0.001
+version 0.003
 
 =head1 SYNOPSIS
 

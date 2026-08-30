@@ -1,5 +1,5 @@
 package Crypt::JWS::OpenSSL;
-$Crypt::JWS::OpenSSL::VERSION = '0.001';
+$Crypt::JWS::OpenSSL::VERSION = '0.003';
 use v5.8.9;
 use Moo 2.004003;
 with qw( Crypt::JWS::OpenSSL::Role::Encoder );
@@ -305,7 +305,7 @@ Crypt::JWS::OpenSSL - Encode, decode and verify signed compact JWTs using OpenSS
 
 =head1 VERSION
 
-version 0.001
+version 0.003
 
 =head1 SYNOPSYS
 
