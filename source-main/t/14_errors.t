@@ -27,7 +27,6 @@ $handler->throw_errors(0);
 
 my $token = $handler->encode(
     claims      => $claims,
-    algorithm   => $algo,
     header      => { alg => $algo, typ => 'JWT' }
 );
 
@@ -39,7 +38,6 @@ $handler->throw_errors(1);
 $token = try {
     return $handler->encode(
         claims      => $claims,
-        algorithm   => $algo,
         header      => { alg => $algo, typ => 'JWT' }
     );
 } catch {
@@ -54,7 +52,6 @@ $handler->throw_errors(0);
 $token = $handler->encode(
     secret      => 'abc',
     claims      => $claims,
-    algorithm   => $algo,
     header      => { alg => $algo, typ => 'JWT' }
 );
 
@@ -67,7 +64,6 @@ $token = try {
     return $handler->encode(
         secret      => 'abc',
         claims      => $claims,
-        algorithm   => $algo,
         header      => { alg => $algo, typ => 'JWT' }
     );
 } catch {
@@ -82,7 +78,6 @@ $handler->throw_errors(0);
 $token = $handler->encode(
     secret      => $secret,
     claims      => $claims,
-    algorithm   => $algo,
     header      => 'blah'
 );
 
@@ -95,7 +90,6 @@ $token = try {
     return $handler->encode(
         secret      => $secret,
         claims      => $claims,
-        algorithm   => $algo,
         header      => 'blah'
     );
 } catch {
@@ -110,7 +104,6 @@ $handler->throw_errors(0);
 $token = $handler->encode(
     secret      => $secret,
     claims      => $claims,
-    algorithm   => 'TRIPPY',
     header      => { alg => 'TRIPPY', typ => 'JWT' }
 );
 
@@ -123,7 +116,6 @@ $token = try {
     return $handler->encode(
         secret      => $secret,
         claims      => $claims,
-        algorithm   => 'TRIPPY',
         header      => { alg => 'TRIPPY', typ => 'JWT' }
     );
 } catch {
@@ -138,7 +130,6 @@ $handler->throw_errors(0);
 $token = $handler->encode(
     secret      => $secret,
     claims      => 'blah',
-    algorithm   => $algo,
     header      => { alg => $algo, typ => 'JWT' }
 );
 
@@ -151,7 +142,6 @@ $token = try {
     return $handler->encode(
         secret      => $secret,
         claims      => 'blah',
-        algorithm   => $algo,
         header      => { alg => $algo, typ => 'JWT' }
     );
 } catch {
@@ -166,7 +156,6 @@ $handler->throw_errors(0);
 $token = $handler->encode(
     secret      => $secret,
     claims      => {},
-    algorithm   => $algo,
     header      => { alg => $algo, typ => 'JWT' }
 );
 
@@ -179,7 +168,6 @@ $token = try {
     return $handler->encode(
         secret      => $secret,
         claims      => {},
-        algorithm   => $algo,
         header      => { alg => $algo, typ => 'JWT' }
     );
 } catch {

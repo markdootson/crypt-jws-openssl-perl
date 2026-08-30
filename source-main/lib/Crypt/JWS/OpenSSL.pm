@@ -1,5 +1,6 @@
 package Crypt::JWS::OpenSSL;
 $Crypt::JWS::OpenSSL::VERSION = '0.001';
+use v5.8.9;
 use Moo 2.004003;
 with qw( Crypt::JWS::OpenSSL::Role::Encoder );
 use Crypt::JWS::OpenSSL::Algorithm::RSA;
@@ -106,7 +107,6 @@ sub decode_unverified {
         header      => undef,
         claims      => undef,
         verifytoken => undef,
-        error       => undef,
     };
     unless($params->{token}) {
         my $errstring = 'Missing token argument';
@@ -318,23 +318,288 @@ version 0.001
       secret => $key,
   );
   
-  my $unverified = $cjos->decode_unverified($inboundtoken);
+  if(!$token) {
+     $logger->log_error( $cjos->last_error)
+  }
   
-  my $secret = local_method_to_choose_secret(
-      $unverified->{header}, $unverified->{claims}
-  );
+  ###################
+  ## in some module
+  ###################
   
-  die 'I do not know the sender' if(!$secret);
+  use Crypt::JWS::OpenSSL;
   
-  my $ok = $cjos->verify(
-    secret      => $secret,
-    verifytoken => $unverified->{verifytoken}
-  );
-
-  if( !$ok ) {
-    die 'I do not trust this token';
+  has verifier => ( is => 'ro', default => sub { Crypt::JWS::OpenSSL->new } );
+  
+  sub permissions_from_token {
+    my($self, $token) = @_;
+    my $unverified = $self->verifier->decode_unverified(token => $token);
+    unless($unverified) {
+        my $reason = $self->verifier->last_error;
+        ## inspect and log reason
+        return undef;
+    }
+    my ($secret, $permissions) = $self->examine_token(
+        $unverified->{header}, $unverified->{claims}
+    );
+    unless($secret && $permissions) {
+      ## no secret and permissions
+      return undef;
+    }
+    my $ok = $self->verifier->verify(
+      secret      => $secret,
+      verifytoken => $unverified->{verifytoken}
+    );
+    unless( $ok && $ok eq '1' ) {
+       my $reason = $self->verifier->last_error;
+       ## inspect and log reason
+       return undef;
+    }
+    ## log access
+    ## grant permissions
+    return $permissions;
   }
 
+=head1 DESCRIPTION
+
+Encode, decode and verify signed compact JWTs using Crypt::OpenSSL modules.
+
+=head1 SUPPORTED ALGORITHMS
+
+=head2 Shared HMAC secret
+
+HS256 HS384 HS512
+
+These algorithms do not require any Crypt::OpenSSL modules. They are included for completeness.
+
+=head2 RSA
+
+RS256 RS384 RS512 PS256 PS384 PS512
+
+=head2 ECDSA
+
+ES256 ES384 ES512
+
+=head1 METHODS
+
+=head2 encode
+
+B<$cjo-E<gt>encode( header =E<gt> $header, claims =E<gt> $claims, secret =E<gt> $secret )>
+
+Accepts a hash reference or an even numbered list.
+
+Returns a signed compact JWT on success or undefined on error.
+
+=head4 parameters
+
+=over
+
+=item header
+
+A reference to a hash containing the header elements for the JWS.
+
+At a minumim this must contain a B<alg> key/value with a value of
+one of the L<supported algorithms|/SUPPORTED ALGORITHMS>.
+
+If no B<typ> key/value is present, a default of B<typ =E<gt> 'JWT'> will be added.
+
+=item claims
+
+A reference to a hash containing the claim elements for the JWS.
+
+This must contain at least 1 key/value pair.
+
+=item secret
+
+The secret used to sign the JWS.
+
+For shared HMAC algorithms, this is a scalar containing the raw shared secret.
+
+For RSA and ECDSA algorithms this can be a scalar containing the
+full text of a pem encoded private key.
+
+A reference to a hash containing the elements of a JWK can also be used.
+
+For a regularly used private key it is more efficient to store the key
+as pem encoded text. You can convert a JWK using L<Crypt::JWS::OpenSSL::Util::JWK>.
+
+Where a B<kid> is required by a verifying recipient, it must always be added to
+the header hash. It will not be taken from the value within a JWK.
+
+=back
+
+For errors and exceptions see L<error handling|/ERROR HANDLING>
+
+=head2 decode_unverified
+
+B<$cjo-E<gt>decode_unverified( token =E<gt> $tokenreceived )>
+
+Accepts a hash reference or an even numbered list.
+
+On success, returns the decocoded header and claims hash references
+together with a 'verifytoken' that can be passed to L</verify>.
+
+Returns undefined on error.
+
+=head4 parameters
+
+=over
+
+=item token
+
+A token to decode.
+
+=back
+
+Returned hash reference structure
+
+  {
+    header      => { ... },
+    claims      => { ... },
+    verifytoken => 'xxxxxxxxxxxx....'
+  }
+
+After inspecting the header and claims, the appropriate secret can
+be passed to L</verify> to verify the signature.
+
+For errors and exceptions see L<error handling|/ERROR HANDLING>
+
+=head2 verify
+
+B<$cjo-E<gt>verify( verifytoken =E<gt> $verifytoken, secret =E<gt> $secret )>
+
+Accepts a hash reference or an even numbered list.
+
+On success returns 1. On failure or error returns 0 or undefined.
+
+=head4 parameters
+
+=over
+
+=item verifytoken
+
+The verifytoken member of the hash reference returned from a
+prior call to L</decode_unverified>.
+
+=item secret
+
+The appropriate public key or shared HMAC secret determined by
+inspection of the header and claims returned from a prior
+call to L</decode_unverified>.
+
+The secret for an RSA or ECDSA algorithm can be a scalar
+containing the full text of a pem encoded public key.
+
+A reference to a hash containing the elements of a JWK can also be used.
+
+For a regularly used public key it is more efficient to store the key
+as pem encoded text. You can convert a JWK using L<Crypt::JWS::OpenSSL::Util::JWK>.
+
+=back
+  
+For errors and exceptions see L<error handling|/ERROR HANDLING>
+
+=head1 PROPERTIES
+
+=head2 last_error
+
+Read only.
+
+When any of the methods L</encode>, L</decode_unverified>,  L</verify> return
+undefined or false, the reason is available in L</last_error>.
+
+see L<error handling|/ERROR HANDLING>
+
+see also L</throw_errors>
+
+=head2 throw_errors
+
+Read write.
+
+Default value 0 (false)
+
+While L</throw_errors> is false, errors or exceptions encountered in
+L</encode>, L</decode_unverified> and L</verify> are caught and
+stored in L</last_error> available to read when the method returns.
+
+If throw_errors is set to 1 ( true ) the module croaks when errors and
+exceptions are encountered in L</encode>, L</decode_unverified> and L</verify>.
+
+see L<error handling|/ERROR HANDLING>
+
+see also L</last_error>
+
+=head2 can_use_pkcs1_padding
+
+Read only.
+
+Returns true ( 1 ) if Crypt::OpenSSL::RSA can 'use_pkcs1_padding'.
+
+Returns false ( 0 ) if Crypt::OpenSSL::RSA cannot 'use_pkcs1_padding'.
+
+This padding method is necessary for algorithms
+
+RS256, RS384, and RS512
+
+It is likely that your version of Crypt::OpenSSL::RSA supports
+'use_pkcs1_padding' as only a couple of short lived versions did not.
+
+=head2 can_use_pkcs1_pss_padding
+
+Returns true ( 1 ) if Crypt::OpenSSL::RSA can 'use_pkcs1_pss_padding'.
+
+Returns false ( 0 ) if Crypt::OpenSSL::RSA cannot 'use_pkcs1_pss_padding'.
+
+This padding method is necessary for algorithms
+
+PS256, PS384, and PS512
+
+This padding method requires OpenSSL 3.x and Crypt::OpenSSL::RSA version
+greater than or equal to 0.38
+
+See also L<Crypt::JWS::OpenSSL::Local>
+
+=head2 JSON
+
+Read only. An instance of a JSON encoder / decoder
+
+The default is JSON::MaybeXS->new->utf8(1);
+
+If you have a partcular perference for a JSON module, 'use' that before 
+Crypt::JWS::OpenSSL or provide your own instance.
+
+  use JSON::XS;
+  use Crypt::JWS::OpenSSL;
+  
+  ## OR
+  
+  use Crypt::JWS::OpenSSL;
+  use JSON::XS;
+  
+  my $cjos = Crypt::JWS::OpenSSL->new( JSON => JSON::XS->new->utf8(1) );
+
+=head1 ERROR HANDLING
+
+When L</throw_errors> is 0 ( the default ) if errors or exceptions are encountered in
+the methods L</encode>, L</decode_unverified> and L</verify>, the methods return
+undefined or false and the reason is available in L</last_error>.
+
+If L</throw_errors> is set to 1, the methods croak on errors or exceptions.
+
+=head1 SEE ALSO
+
+=head2 Crypt OpenSSL modules used
+
+L<Crypt::OpenSSL::RSA>
+
+L<Crypt::OpenSSL::EC>
+
+L<Crypt::OpenSSL::ECDSA>
+
+=head2 Alternatives for JWT handling.
+
+L<CryptX> ( wraps the LibTomCrypt library )
+
+L<Crypt::Perl> ( pure perl )
 
 =head1 AUTHOR
 
