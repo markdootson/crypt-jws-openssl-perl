@@ -1,4 +1,8 @@
 
+0.005    2026-09-09
+         * Amended version checks to allow Crypt::OpenSSL::RSA versions
+           0.36 and 0.37 use for RSASSA-PSS ( use_pkcs1_pss_padding )
+
 0.004    2026-09-01
          * Fix Crypt::JWS::OpenSSL::Util::PEM method generate_rsa_key_pair
            to call the mehods available in the installed Crypt::OpenSSL::RSA
